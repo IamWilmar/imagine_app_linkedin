@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:imagine_app_linkedin/routes/routes.dart';
+import 'package:imagine_app_linkedin/services/auth_service.dart';
+import 'package:provider/provider.dart';
  
 void main() => runApp(MyApp());
  
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Imagine App LinkedIn',
-      initialRoute: 'home',
-      routes: appRoutes,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Imagine App LinkedIn',
+        initialRoute: 'login',
+        routes: appRoutes,
+      ),
     );
   }
 }
