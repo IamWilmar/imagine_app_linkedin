@@ -29,5 +29,3 @@ class PostsResponse {
         "posts": List<dynamic>.from(posts.map((x) => x.toJson())),
     };
 }
-
-

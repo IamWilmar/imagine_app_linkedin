@@ -8,6 +8,7 @@ class Post {
         this.userPhoto,
         this.createdAt,
         this.updatedAt,
+        this.uid,
     });
 
     String photoContent;
@@ -18,6 +19,7 @@ class Post {
     String userPhoto;
     DateTime createdAt;
     DateTime updatedAt;
+    String uid;
 
     factory Post.fromJson(Map<String, dynamic> json) => Post(
         photoContent: json["photoContent"],
@@ -28,6 +30,7 @@ class Post {
         userPhoto: json["userPhoto"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
+        uid: json["uid"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -39,5 +42,6 @@ class Post {
         "userPhoto": userPhoto,
         "createdAt": createdAt.toIso8601String(),
         "updatedAt": updatedAt.toIso8601String(),
+        "uid": uid,
     };
 }

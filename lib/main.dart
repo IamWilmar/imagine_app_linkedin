@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:imagine_app_linkedin/providers/post_provider.dart';
+import 'package:imagine_app_linkedin/providers/users_provider.dart';
 import 'package:imagine_app_linkedin/routes/routes.dart';
 import 'package:imagine_app_linkedin/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +13,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider(create: (_) => UsersProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
