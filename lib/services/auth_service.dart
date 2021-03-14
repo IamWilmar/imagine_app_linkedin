@@ -31,6 +31,8 @@ class AuthService with ChangeNotifier {
   }
 
   //Interacciones con el almacenamiento de token
+  //Se guarda el token porque es necesario usarlo
+  //en cada interaccion  con al API
   Future _guardarToken(String token) async {
     return await _storage.write(key: 'token', value: token);
   }
@@ -45,13 +47,16 @@ class AuthService with ChangeNotifier {
       this._autenticando = true;
       final logInData = {'email': email, 'password': password};
       final Uri url = new Uri.https('${Enviroment.apiUrl}', '/api/login');
+      //Se hace un request a la API
       final resp = await http.post(url,
           body: jsonEncode(logInData),
-          headers: {'Content-Type': 'application/json'});  
+          headers: {'Content-Type': 'application/json'}); 
+      //Si el API devuelve un estado 200
+      //envia un true a la pagina del login
       if (resp.statusCode == 200) {
         final loginResponse = authResponseFromJson(resp.body);
         this.usuario = loginResponse.usuario;
-        await this._guardarToken(loginResponse.token);
+        await this._guardarToken(loginResponse.token); // Guardar el token
         this._autenticando = false;  
         print(resp.body);
         return true;
@@ -60,6 +65,7 @@ class AuthService with ChangeNotifier {
         notifyListeners();
         return false;
       }
+
     } catch (error) {
       this._autenticando = false;    
       notifyListeners();

@@ -1,7 +1,6 @@
-// To parse this JSON data, do
-//
-//     final postsResponse = postsResponseFromJson(jsonString);
-
+/*
+  Modelo convertir la respuesta de API a la petición de traer los post publicados.
+*/
 import 'dart:convert';
 
 import 'package:imagine_app_linkedin/models/post_model.dart';

@@ -3,16 +3,23 @@ import 'package:provider/provider.dart';
 import 'package:imagine_app_linkedin/models/usuario_model.dart';
 import 'package:imagine_app_linkedin/providers/users_provider.dart';
 
+/*
+  Barra de estatus de usuarios
+  Muestra la foto de los usuarios
+  en una lista vertical
+*/
+
 class UserStatusBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //acceso al provider con la lista de usuarios
     final usersProvider = Provider.of<UsersProvider>(context);
     return Container(
       width: 10,
       height: 100,
       color: Colors.white,
       child: ListView.builder(
-        itemCount: usersProvider.users.length,
+        itemCount: usersProvider.users.length, // Construye lista con los usuarios creados
         padding: EdgeInsets.symmetric(horizontal: 10),
         scrollDirection: Axis.horizontal,
         itemBuilder: (_, i) => _StatusItem(user: usersProvider.users[i]),

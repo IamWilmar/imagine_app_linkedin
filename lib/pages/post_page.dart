@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:imagine_app_linkedin/widgets/create_post_button.dart';
+import 'package:imagine_app_linkedin/widgets/post_creation_user_info.dart';
+import 'package:imagine_app_linkedin/widgets/post_creation_bottombar.dart';
+import 'package:imagine_app_linkedin/widgets/privacy_modal_tile.dart';
 import 'package:imagine_app_linkedin/models/post_model.dart';
-import 'package:imagine_app_linkedin/widgets/user_photo.dart';
 import 'package:imagine_app_linkedin/services/auth_service.dart';
 import 'package:imagine_app_linkedin/providers/post_provider.dart';
 import 'package:imagine_app_linkedin/widgets/post_page_widgets.dart';
 import 'package:imagine_app_linkedin/providers/custom_tabbar_provider.dart';
+
+/*
+  PAGINA PARA LA CREACIÓN DE POST
+*/
 
 class PostPage extends StatefulWidget {
   @override
@@ -13,26 +20,160 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
+
   TextEditingController _postContent = TextEditingController();
   Post post = new Post();
-  int _radioValue = 0;
+
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      //Activa el bottomModal que aparece por defecto al acceder a la pagina
       await _mainModal(context, 0);
+      //Asgina los valores de los provider.
       final authService = Provider.of<AuthService>(context, listen: false);
       final postProvider = Provider.of<PostProvider>(context, listen: false);
-      final tabIndex =
-          Provider.of<CustomtabBarProvider>(context, listen: false);
+      final tabIndex = Provider.of<CustomtabBarProvider>(context, listen: false);
       postProvider.de = authService.usuario.uid;
       postProvider.username = authService.usuario.nombre;
       postProvider.userPhoto = authService.usuario.photo;
       postProvider.privacy = 'Anyone';
+      postProvider.content = '';
       tabIndex.index = 0;
     });
   }
 
+  @override
+  void dispose() {
+    _postContent.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Start post', style: TextStyle(color: Colors.black)),
+        elevation: 0.5,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.close, color: Colors.grey),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, 'home');
+          },
+        ),
+        actions: [Center(child: PostButton())], //Boton para publicar Post
+      ),
+      body: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  //Construye la parte superior de la pagina.
+                  //Contiene la informacion de usuario y el boton de cambio de privacidad.
+                  UserTopInfo(onPressed: () => _choosePrivacySettings(context)), 
+                  _createTextSpace(context), // Construye el widget para agregar el contenido de post
+                ],
+              ),
+            ),
+          ),
+          //Crea la barra inferior
+          PostCreationBottomBar(
+            onPressedEllipsis: () => _mainModal(context, 300),
+            onPressedPrivacy: () => _choosePrivacySettings(context),
+          ), 
+        ],
+      ),
+    );
+  }
+
+  //Creación del campo de texto para el contenido del post
+  Widget _createTextSpace(BuildContext context) {
+    final postProvider = Provider.of<PostProvider>(context);
+    return Container(
+      height: 300,
+      margin: EdgeInsets.only(left: 10, right: 5),
+      child: TextField(
+        controller: _postContent,
+        keyboardType: TextInputType.multiline,
+        minLines: 1,
+        maxLines: null,
+        decoration: InputDecoration(
+          hintText: 'What do you want to talk about?',
+          border: InputBorder.none,
+        ),
+        onChanged: (String content) {
+          //Guardar el texto en el provider al detectar un cambio
+          postProvider.content = _postContent.text;
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  //Genera el modal para Elegir la privacidad de post
+  _choosePrivacySettings(BuildContext context) async {
+    final modalTitle = "Who can see this post?";
+    final modalTitleStyle =
+        TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
+    final modalSubtitle =
+        "Your post will be visible on feed, on your profile and in search results";
+    FocusScope.of(context).requestFocus(FocusNode());
+    await Future.delayed(Duration(milliseconds: 300));
+    return showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GreyUpperSeparator(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(modalTitle, style: modalTitleStyle),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              child: Text(modalSubtitle),
+            ),
+            PrivacyTile(
+              icon: Icons.public,
+              title: 'Anyone',
+              subtitle: 'Anyone on or off LinkedIn',
+              index: 0,
+            ),
+            PrivacyTile(
+              icon: Icons.people,
+              title: 'Connections only',
+              subtitle: 'Connection on LinkedIn',
+              index: 1,
+            ),
+            PrivacyTile(
+              icon: Icons.group_work_rounded,
+              title: 'Group members',
+              subtitle: 'Select a group you are in',
+              index: 2,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //Crea el Modal que aparece al inicial la pagina
+  //Para mostrarlo de nuevo Presionar icono de los tres puntos
+  //En la barra inferior
   _mainModal(BuildContext context, int milliseconds) async {
     final optionStyle = TextStyle(fontWeight: FontWeight.w600);
     final Map<IconData, String> modalElements = {
@@ -72,240 +213,5 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
-  @override
-  void dispose() {
-    _postContent.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('Start post', style: TextStyle(color: Colors.black)),
-        elevation: 0.5,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: Colors.grey),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, 'home');
-          },
-        ),
-        actions: [
-          Center(
-            child: InkWell(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'Post',
-                  style: TextStyle(
-                      color: postProvider.content.trim().length > 0
-                          ? Colors.black
-                          : Colors.grey,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              onTap: postProvider.content.trim().length > 0
-                  ? () async {
-                      await postProvider.sendPost();
-                      Navigator.pushReplacementNamed(context, 'home');
-                    }
-                  : null,
-            ),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  _userTopInfo(context),
-                  _createTextSpace(context),
-                ],
-              ),
-            ),
-          ),
-          _createBottomBar(context),
-        ],
-      ),
-    );
-  }
-
-
-  _userTopInfo(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, top: 14),
-      child: Row(
-        children: <Widget>[
-          CircularUserPhoto(photo: authService.usuario.photo),
-          SizedBox(width: 5),
-          NameButton(userName: authService.usuario.nombre),
-          SizedBox(width: 5),
-          _createPrivacyButton(context),
-        ],
-      ),
-    );
-  }
-
-  _createTextSpace(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context);
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 5),
-      child: TextField(
-        controller: _postContent,
-        keyboardType: TextInputType.multiline,
-        minLines: 1,
-        maxLines: null,
-        decoration: InputDecoration(
-          hintText: 'What do you want to talk about?',
-          border: InputBorder.none,
-        ),
-        onChanged: (String content) {
-          postProvider.content = _postContent.text;
-          setState(() {});
-        },
-      ),
-    );
-  }
-
-  _createBottomBar(BuildContext context) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: kToolbarHeight,
-      child: Container(
-        padding: EdgeInsets.only(left: 10, right: 7),
-        color: Colors.white,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            PostCreationItem(icon: Icons.camera_alt_rounded, function: () {}),
-            PostCreationItem(icon: Icons.video_call_rounded, function: () {}),
-            PostCreationItem(
-                icon: Icons.image_outlined, function: (){}),
-            PostCreationItem(
-              icon: Icons.more_horiz,
-              function: () => _mainModal(context, 300),
-            ),
-            Expanded(child: SizedBox(width: 1)),
-            BottomPrivacyButton(function: () => _choosePrivacySettings(context)),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  _createPrivacyButton(BuildContext context) {
-    final PostProvider postProvider = Provider.of<PostProvider>(context);
-    return InkWell(
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 1, horizontal: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Colors.white,
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(Icons.public, size: 16),
-            SizedBox(width: 1),
-            Text((postProvider.privacy != null)
-                ? postProvider.privacy
-                : "Anyone"),
-            SizedBox(width: 1),
-            Icon(Icons.arrow_drop_down),
-          ],
-        ),
-      ),
-      onTap: () => _choosePrivacySettings(context),
-    );
-  }
-
-  _choosePrivacySettings(BuildContext context) async {
-    final modalTitle = "Who can see this post?";
-    final modalTitleStyle =
-        TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
-    final modalSubtitle =
-        "Your post will be visible on feed, on your profile and in search results";
-    FocusScope.of(context).requestFocus(FocusNode());
-    await Future.delayed(Duration(milliseconds: 300));
-    return showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GreyUpperSeparator(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(modalTitle, style: modalTitleStyle),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              child: Text(modalSubtitle),
-            ),
-            _privacyTile(
-              context,
-              Icons.public,
-              'Anyone',
-              'Anyone on or off LinkedIn',
-              0,
-            ),
-            _privacyTile(
-              context,
-              Icons.people,
-              'Connections only',
-              'Connection on LinkedIn',
-              1,
-            ),
-            _privacyTile(
-              context,
-              Icons.group_work_rounded,
-              'Group members',
-              'Select a group you are in',
-              2,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  _privacyTile(BuildContext context, IconData icon, String title,
-      String subtitle, int index) {
-    final postProvider = Provider.of<PostProvider>(context);
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: TextStyle(fontWeight: FontWeight.w600)),
-      trailing: Radio(
-        value: index,
-        groupValue: _radioValue,
-        onChanged: (int value) {
-          _radioValue = index;
-          this.post.privacy = title;
-          postProvider.privacy = title;
-          setState(() {});
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
 }
+

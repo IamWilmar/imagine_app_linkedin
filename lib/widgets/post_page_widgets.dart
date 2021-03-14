@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:imagine_app_linkedin/providers/post_provider.dart';
 import 'package:provider/provider.dart';
 
+/*
+Widgets de Post
+*/
+//Nombre del usuario 
 class NameButton extends StatelessWidget {
   final String userName;
   const NameButton({Key key, this.userName}) : super(key: key);
@@ -27,6 +31,7 @@ class NameButton extends StatelessWidget {
   }
 }
 
+//Separador gris para los modalbottomSheet
 class GreyUpperSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -45,6 +50,7 @@ class GreyUpperSeparator extends StatelessWidget {
   }
 }
 
+//Item de la barra inferior en la pagina para crear post
 class PostCreationItem extends StatelessWidget {
   final IconData icon;
   final VoidCallback function;
@@ -61,6 +67,7 @@ class PostCreationItem extends StatelessWidget {
   }
 }
 
+//Boton para cambio de privacidad
 class BottomPrivacyButton extends StatelessWidget {
   final privacyStyle =
       TextStyle(color: Colors.grey, fontWeight: FontWeight.bold);

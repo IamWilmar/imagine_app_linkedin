@@ -3,6 +3,7 @@ import 'package:imagine_app_linkedin/providers/custom_tabbar_provider.dart';
 import 'package:imagine_app_linkedin/providers/login_provider.dart';
 import 'package:imagine_app_linkedin/providers/post_list_provider.dart';
 import 'package:imagine_app_linkedin/providers/post_provider.dart';
+import 'package:imagine_app_linkedin/providers/radio_button_provider.dart';
 import 'package:imagine_app_linkedin/providers/users_provider.dart';
 import 'package:imagine_app_linkedin/routes/routes.dart';
 import 'package:imagine_app_linkedin/services/auth_service.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UsersProvider()),
         ChangeNotifierProvider(create: (_) => CustomtabBarProvider()),
         ChangeNotifierProvider(create: (_) => PostListProvider()),
+        ChangeNotifierProvider(create: (_) => RadioProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

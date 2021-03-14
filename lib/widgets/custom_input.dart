@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:imagine_app_linkedin/providers/login_provider.dart';
 import 'package:provider/provider.dart';
 
+
+/*
+  Espacios de texto para el Login
+ */
 class CustomInput extends StatelessWidget {
   final IconData icon;
   final String hint;
@@ -47,8 +51,10 @@ class CustomInput extends StatelessWidget {
         ),
         onChanged: (String val){
           if(this.isPassword == true){
+            //se almacena en el provider de password
             loginProvider.password = val;
           }else{
+            //se almacena en el provider del username(email)
             loginProvider.username = val;
           }
         },

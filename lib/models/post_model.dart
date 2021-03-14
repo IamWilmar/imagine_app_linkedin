@@ -1,3 +1,7 @@
+/*
+  Modelo para recibir o enviar información del Post
+*/
+
 class Post {
     Post({
         this.photoContent,
@@ -21,6 +25,7 @@ class Post {
     DateTime updatedAt;
     String uid;
 
+    //mapea los valores de Json a los atributos de la clase
     factory Post.fromJson(Map<String, dynamic> json) => Post(
         photoContent: json["photoContent"],
         de: json["de"],
@@ -33,6 +38,7 @@ class Post {
         uid: json["uid"],
     );
 
+    //Proceso Inverso
     Map<String, dynamic> toJson() => {
         "photoContent": photoContent,
         "de": de,

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+/*
+  Widget para separa elementos con un punto
+  Se encuentra en los posts en Home
+*/
 class SeparationDot extends StatelessWidget {
   const SeparationDot({
     Key key,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/*
+  Boton de Login
+ */
 class BlueButton extends StatelessWidget {
   final String text;
   final Function onPressed;
@@ -12,7 +15,7 @@ class BlueButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-      shape: const StadiumBorder(),
+      shape: const StadiumBorder(), // le da la forma redonda al botón
     ),
       onPressed: this.onPressed,
       child: Center(

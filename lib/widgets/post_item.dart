@@ -6,6 +6,11 @@ import 'package:imagine_app_linkedin/widgets/interaction_button.dart';
 import 'package:imagine_app_linkedin/widgets/separation_dot.dart';
 import 'package:provider/provider.dart';
 
+
+/*
+  Widget para mostrar los post en la pagina Home
+ */
+
 class PostItem extends StatelessWidget {
   final Post post;
   const PostItem({Key key, this.post}) : super(key: key);
@@ -21,6 +26,7 @@ class PostItem extends StatelessWidget {
           _userInfo(context, post),
           SizedBox(height: 10),
           _postContent(),
+          // Si el post tiene una imagen la muestra, si no es el caso no
           if (this.post.photoContent.length > 4) ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
@@ -31,9 +37,9 @@ class PostItem extends StatelessWidget {
               ),
             ),
           ],
-          _reactionBar(),
+          _reactionBar(), // Crear la barra de reacciones(likes)
           Divider(),
-          _interactionBar(),
+          _interactionBar(), // Crea los botones de interaccion con el post
         ],
       ),
     );
@@ -77,20 +83,21 @@ class PostItem extends StatelessWidget {
           ],
         ),
         Expanded(child: SizedBox()),
+        //Pop menu Para borrar el post
         PopupMenuButton(
           onSelected: (int index) async {
             final authService = Provider.of<AuthService>(context, listen: false);
             final postService = PostService();
             if (authService.usuario.uid == post.de && index == 0) {
-              await postService.borrarPost(post.uid);
-              Navigator.pushReplacementNamed(context, 'home');
+              await postService.borrarPost(post.uid); // Llama a la funcion para borrar post
+              Navigator.pushReplacementNamed(context, 'home'); // navega a home
             }
           },
           icon: Icon(Icons.more_horiz),
           itemBuilder: (context) {
             return [
               PopupMenuItem(
-                value: 0,
+                value: 0, //valor que debe ser index en onSelected(Linea 88) para borrar
                 child: Text('Borrar Post'),
               ),
             ];

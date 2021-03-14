@@ -1,4 +1,4 @@
-
+//Modelo del Usuario
 class Usuario {
     Usuario({
         this.photo,

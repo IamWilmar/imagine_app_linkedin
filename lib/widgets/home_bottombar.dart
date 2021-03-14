@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:imagine_app_linkedin/providers/custom_tabbar_provider.dart';
 import 'package:provider/provider.dart';
 
+/*  
+  Bottombar de Home
+  Cada Item tiene un indice y a través de un provider
+  los items saben si esta selecionado o no
+ */
 class CustomBottomBar extends StatelessWidget {
   const CustomBottomBar({
     Key key,
@@ -55,6 +60,7 @@ class CustomBottomBar extends StatelessWidget {
   }
 }
 
+//Item de bottombar
 class CustomBarItem extends StatelessWidget {
   final IconData icon;
   final String buttoName;
@@ -69,6 +75,7 @@ class CustomBarItem extends StatelessWidget {
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    //Acceso al provider
     final tabIndex = Provider.of<CustomtabBarProvider>(context);
     return InkWell(
       onTap: () {
@@ -79,14 +86,14 @@ class CustomBarItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            color: tabIndex.index == index ? Colors.black : Colors.transparent,
+            color: tabIndex.index == index ? Colors.black : Colors.transparent, // si esta seleccionado el color es negro
             width: 50,
             height: 3,
           ),
           Icon(
             icon,
             color: tabIndex.index == index ? Colors.black : Colors.grey,
-            size: tabIndex.index == index ? 30 : 26,
+            size: tabIndex.index == index ? 30 : 26, //si esta seleccionado el tamaño es mas grande
           ),
           Text(buttoName),
           SizedBox(height: 3),

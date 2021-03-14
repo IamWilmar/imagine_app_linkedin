@@ -5,7 +5,9 @@ import 'package:imagine_app_linkedin/services/auth_service.dart';
 import 'package:imagine_app_linkedin/widgets/blue_button.dart';
 import 'package:imagine_app_linkedin/widgets/custom_input.dart';
 
-
+/* 
+  PAGINA DE INICIO DE SESION
+*/
 class LogInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class LogInPage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 30),
                   child: Text('Log In', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600)),
                 ),
-                _Form(),
+                _Form(), // Contiene los campos de texto para iniciar sesion
                 SizedBox(height: 5),
                 Center(
                   child: Text(
@@ -62,6 +64,7 @@ class UpperBar extends StatelessWidget {
   }
 }
 
+
 class _Form extends StatefulWidget {
   @override
   __FormState createState() => __FormState();
@@ -96,13 +99,12 @@ class __FormState extends State<_Form> {
             text: authService.autenticando ? 'Waiting...' :'Log In',
             onPressed: (loginProvider.username.trim().length < 1 || loginProvider.password.trim().length < 1) ? null : () async {
               FocusScope.of(context).unfocus();
+              //Accede al servicio de autenticación
+              //Si la autenticación fue un exito isLoginOk = true
               final isloginOk = await authService.login(emailController.text.trim(), passController.text.trim());
               if(isloginOk){
                 Navigator.pushReplacementNamed(context, 'home');
                 loginProvider.resetValues();
-              }else{
-                //Mostrar alerta
-                //mostrarAlerta(context, 'Login Incorrecto', 'Credenciales no validas');
               }
             },
           ),

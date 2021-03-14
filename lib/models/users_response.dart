@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final usersResponse = usersResponseFromJson(jsonString);
+//Modelo para recibir la información de todos los usuarios
 
 import 'dart:convert';
 import 'package:imagine_app_linkedin/models/usuario_model.dart';

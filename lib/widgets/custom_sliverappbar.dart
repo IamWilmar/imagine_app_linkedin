@@ -3,9 +3,15 @@ import 'package:imagine_app_linkedin/services/auth_service.dart';
 import 'package:imagine_app_linkedin/widgets/user_photo.dart';
 import 'package:provider/provider.dart';
 
+/*
+  Sliver App Bar en la pagina home
+ */
+
 class CustomSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //Acceso al provider de autenticacion
+    //para tener acceso a la información de usuario
     final authService = Provider.of<AuthService>(context);
     return SliverAppBar(
       backgroundColor: Colors.white,
@@ -44,10 +50,10 @@ class CustomSliverAppBar extends StatelessWidget {
           },
         ),
       ],
-      floating: true,
+      floating: true,  // Permite la visibilidad de appbar al hacer scroll hacia abajo
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: CircularUserPhoto(photo: authService.usuario.photo),
+        child: CircularUserPhoto(photo: authService.usuario.photo), //Foto de usuario
       ),
     );
   }
