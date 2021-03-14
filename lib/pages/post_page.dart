@@ -5,6 +5,7 @@ import 'package:imagine_app_linkedin/widgets/user_photo.dart';
 import 'package:imagine_app_linkedin/services/auth_service.dart';
 import 'package:imagine_app_linkedin/providers/post_provider.dart';
 import 'package:imagine_app_linkedin/widgets/post_page_widgets.dart';
+import 'package:imagine_app_linkedin/providers/custom_tabbar_provider.dart';
 
 class PostPage extends StatefulWidget {
   @override
@@ -19,49 +20,62 @@ class _PostPageState extends State<PostPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _mainModal(context);
+      await _mainModal(context, 0);
       final authService = Provider.of<AuthService>(context, listen: false);
       final postProvider = Provider.of<PostProvider>(context, listen: false);
+      final tabIndex =
+          Provider.of<CustomtabBarProvider>(context, listen: false);
       postProvider.de = authService.usuario.uid;
       postProvider.username = authService.usuario.nombre;
       postProvider.userPhoto = authService.usuario.photo;
       postProvider.privacy = 'Anyone';
+      tabIndex.index = 0;
     });
   }
 
-  _mainModal(BuildContext context) {
+  _mainModal(BuildContext context, int milliseconds) async {
+    final optionStyle = TextStyle(fontWeight: FontWeight.w600);
+    final Map<IconData, String> modalElements = {
+      Icons.photo: 'Add Photo',
+      Icons.video_call: 'Take a video',
+      Icons.star: 'Celebrate an occasion',
+      Icons.article: 'Add a document',
+      Icons.work: 'Share that you\'re hiring',
+      Icons.assignment_ind: 'Find an expert',
+      Icons.collections: 'Share a story',
+      Icons.leaderboard: 'Create a poll',
+    };
+    FocusScope.of(context).requestFocus(FocusNode());
+    await Future.delayed(Duration(milliseconds: milliseconds));
     return showModalBottomSheet(
-      barrierColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      isScrollControlled: true,
       context: context,
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.only(top: 5, left: 10, right: 5),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                height: 5,
-                width: 30,
-                color: Colors.grey,
-              ),
-              Text("main Modal"),
-              Text("main Modal"),
-              Text("main Modal"),
-              Text("main Modal"),
-              Text("main Modal"),
-              Text("main Modal"),
-            ],
-          ),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GreyUpperSeparator(),
+            ...modalElements.entries
+                .map((e) => ListTile(
+                    leading: Icon(e.key),
+                    title: Text(e.value, style: optionStyle)))
+                .toList(),
+          ],
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _postContent.dispose();
+    super.dispose();
   }
 
   @override
@@ -124,6 +138,7 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
+
   _userTopInfo(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     return Padding(
@@ -175,15 +190,20 @@ class _PostPageState extends State<PostPage> {
           children: <Widget>[
             PostCreationItem(icon: Icons.camera_alt_rounded, function: () {}),
             PostCreationItem(icon: Icons.video_call_rounded, function: () {}),
-            PostCreationItem(icon: Icons.image_outlined, function: () {}),
-            PostCreationItem(icon: Icons.more_horiz, function: () {}),
+            PostCreationItem(
+                icon: Icons.image_outlined, function: (){}),
+            PostCreationItem(
+              icon: Icons.more_horiz,
+              function: () => _mainModal(context, 300),
+            ),
             Expanded(child: SizedBox(width: 1)),
-            BottomPrivacyButton(function: () => choosePrivacySettings(context)),
+            BottomPrivacyButton(function: () => _choosePrivacySettings(context)),
           ],
         ),
       ),
     );
   }
+
 
   _createPrivacyButton(BuildContext context) {
     final PostProvider postProvider = Provider.of<PostProvider>(context);
@@ -207,16 +227,18 @@ class _PostPageState extends State<PostPage> {
           ],
         ),
       ),
-      onTap: () => choosePrivacySettings(context),
+      onTap: () => _choosePrivacySettings(context),
     );
   }
 
-  choosePrivacySettings(BuildContext context) {
+  _choosePrivacySettings(BuildContext context) async {
     final modalTitle = "Who can see this post?";
     final modalTitleStyle =
         TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
     final modalSubtitle =
         "Your post will be visible on feed, on your profile and in search results";
+    FocusScope.of(context).requestFocus(FocusNode());
+    await Future.delayed(Duration(milliseconds: 300));
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -239,21 +261,21 @@ class _PostPageState extends State<PostPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Text(modalSubtitle),
             ),
-            privacyTile(
+            _privacyTile(
               context,
               Icons.public,
               'Anyone',
               'Anyone on or off LinkedIn',
               0,
             ),
-            privacyTile(
+            _privacyTile(
               context,
               Icons.people,
               'Connections only',
               'Connection on LinkedIn',
               1,
             ),
-            privacyTile(
+            _privacyTile(
               context,
               Icons.group_work_rounded,
               'Group members',
@@ -266,7 +288,7 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
-  privacyTile(BuildContext context, IconData icon, String title,
+  _privacyTile(BuildContext context, IconData icon, String title,
       String subtitle, int index) {
     final postProvider = Provider.of<PostProvider>(context);
     return ListTile(

@@ -7,7 +7,7 @@ import 'package:imagine_app_linkedin/services/auth_service.dart';
 class UsersService {
   static Future<List<Usuario>> getUser() async {
     try {
-      final Uri url = Uri.http('${Enviroment.apiUrl}', '/api/usuarios');
+      final Uri url = Uri.https('${Enviroment.apiUrl}', '/api/usuarios');
       final resp = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'x-token': await AuthService.getToken()

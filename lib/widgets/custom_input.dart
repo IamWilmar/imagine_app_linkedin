@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:imagine_app_linkedin/providers/login_provider.dart';
+import 'package:provider/provider.dart';
 
 class CustomInput extends StatelessWidget {
   final IconData icon;
@@ -18,6 +20,7 @@ class CustomInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loginProvider = Provider.of<LoginProvider>(context);
     return Container(
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.only(top: 5, left: 5, bottom: 5, right: 20),
@@ -42,8 +45,12 @@ class CustomInput extends StatelessWidget {
           border: InputBorder.none,
           hintText: this.hint,
         ),
-        onChanged: (val){
-          
+        onChanged: (String val){
+          if(this.isPassword == true){
+            loginProvider.password = val;
+          }else{
+            loginProvider.username = val;
+          }
         },
       ),
     );

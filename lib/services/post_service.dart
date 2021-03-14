@@ -9,7 +9,7 @@ import 'package:imagine_app_linkedin/services/auth_service.dart';
 class PostService {
   static Future<List<Post>> getPosts() async {
     try {
-      final Uri url = new Uri.http('${Enviroment.apiUrl}', '/api/posts');
+      final Uri url = new Uri.https('${Enviroment.apiUrl}', '/api/posts');
       final resp = await http.get(
         url,
         headers: ({
@@ -27,7 +27,7 @@ class PostService {
 
   Future<void> createPost(Post newpost) async {
     try {
-      final Uri url = Uri.http('${Enviroment.apiUrl}', '/api/posts/new');
+      final Uri url = Uri.https('${Enviroment.apiUrl}', '/api/posts/new');
       final resp = await http.post(
         url,
         body: (jsonEncode({
@@ -50,7 +50,7 @@ class PostService {
 
   Future<void> borrarPost(String postId) async {
     try{
-      final Uri url = Uri.http('${Enviroment.apiUrl}', '/api/posts/delete/$postId');
+      final Uri url = Uri.https('${Enviroment.apiUrl}', '/api/posts/delete/$postId');
       final resp = await http.delete(url, headers: ({
         'Content-Type' : 'application/json',
         'x-token': await AuthService.getToken()

@@ -8,6 +8,14 @@ import 'package:imagine_app_linkedin/models/usuario_model.dart';
 
 class AuthService with ChangeNotifier {
   Usuario usuario;
+  bool _autenticando = false;
+
+  bool get autenticando => this._autenticando;
+
+  set autenticando(bool autenticando) {
+    this._autenticando = autenticando;
+  }
+
   final _storage = new FlutterSecureStorage();
 
   //Getter y setter del token
@@ -33,18 +41,28 @@ class AuthService with ChangeNotifier {
 
   //Login method
   Future<bool> login(String email, String password) async {
-    final logInData = {'email': email, 'password': password};
-    final Uri url = new Uri.http('${Enviroment.apiUrl}', '/api/login');
-    final resp = await http.post(url,
-        body: jsonEncode(logInData),
-        headers: {'Content-Type': 'application/json'});
-    if (resp.statusCode == 200) {
-      final loginResponse = authResponseFromJson(resp.body);
-      this.usuario = loginResponse.usuario;
-      await this._guardarToken(loginResponse.token);
-      print(resp.body);
-      return true;
-    } else {
+    try {
+      this._autenticando = true;
+      final logInData = {'email': email, 'password': password};
+      final Uri url = new Uri.https('${Enviroment.apiUrl}', '/api/login');
+      final resp = await http.post(url,
+          body: jsonEncode(logInData),
+          headers: {'Content-Type': 'application/json'});  
+      if (resp.statusCode == 200) {
+        final loginResponse = authResponseFromJson(resp.body);
+        this.usuario = loginResponse.usuario;
+        await this._guardarToken(loginResponse.token);
+        this._autenticando = false;  
+        print(resp.body);
+        return true;
+      } else {
+        this._autenticando = false;  
+        notifyListeners();
+        return false;
+      }
+    } catch (error) {
+      this._autenticando = false;    
+      notifyListeners();
       return false;
     }
   }
@@ -56,7 +74,7 @@ class AuthService with ChangeNotifier {
       'email': email,
       'password': password
     };
-    final Uri url = new Uri.http('${Enviroment.apiUrl}', '/api/login/new');
+    final Uri url = new Uri.https('${Enviroment.apiUrl}', '/api/login/new');
     final resp = await http.post(url,
         body: jsonEncode(registerData),
         headers: {'Content-Type': 'application/json'});
@@ -74,7 +92,7 @@ class AuthService with ChangeNotifier {
   Future<bool> isLoggedIn() async {
     final token = await this._storage.read(key: 'token');
     try {
-      final Uri url = new Uri.http('${Enviroment.apiUrl}', '/api/login/renew');
+      final Uri url = new Uri.https('${Enviroment.apiUrl}', '/api/login/renew');
       final resp = await http.get(url,
           headers: {'Content-Type': 'application/json', 'x-token': token});
       if (resp.statusCode == 200) {

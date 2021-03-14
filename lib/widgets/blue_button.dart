@@ -11,9 +11,9 @@ class BlueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      // elevation: 0.0,
-      // highlightElevation: 5,
-      // color: Colors.black,
+      style: ElevatedButton.styleFrom(
+      shape: const StadiumBorder(),
+    ),
       onPressed: this.onPressed,
       child: Center(
         child: Text(

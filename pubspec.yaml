@@ -31,7 +31,6 @@ dependencies:
   provider: ^5.0.0
   http: ^0.13.0
   flutter_secure_storage: ^4.1.0
-  pull_to_refresh: ^1.6.4
 
 dev_dependencies:
   flutter_test:
